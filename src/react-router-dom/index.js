@@ -1,6 +1,6 @@
 import React from "react"
 import { Router } from '../react-router'
-import {createHashHistory, createBrowserHistory} from "history" 
+import {createHashHistory, createBrowserHistory} from "../history" 
 export * from '../react-router'
 
 export function HashRouter({children}) {
@@ -15,6 +15,7 @@ export function HashRouter({children}) {
 		// 当前的路径 window.location.pathname
 		location: history.location
 	})
+	// history 不会变，但是它的属性会变 history.push('/user')
 	// 监听 history 中的路径变化，当 history 对象中的路径发生改变后执行 setState
   React.useLayoutEffect(()=> history.listen(setState), [history])
 	return (
