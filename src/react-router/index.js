@@ -87,3 +87,11 @@ export function useLocation() {
 }
 
 export function Route() {}
+
+export function useNavigate(){
+	const { navigator } = React.useContext(NavigatorContext)
+	const navigate = React.useCallback(to => {
+		navigator.push(to)
+	}, [navigator])
+	return navigate
+}

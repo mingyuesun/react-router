@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-has-content */
 import React from "react"
-import { Router } from '../react-router'
+import { Router, useNavigate } from '../react-router'
 import {createHashHistory, createBrowserHistory} from "../history" 
 export * from '../react-router'
 
@@ -48,5 +50,13 @@ export function BrowserRouter({children}) {
 			navigationType={state.action}
 			navigator={history}
 		/>
+	)
+}
+
+export function Link(props) {
+	let navigate = useNavigate()
+	const {to, children} = props
+	return (
+		<a onClick={() => navigate(to)}>{children}</a>
 	)
 }
