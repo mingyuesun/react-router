@@ -46,27 +46,40 @@ export function useRoutes(routes) {
 		const { path, element } = routes[i]
 		let match = matchPath(path, pathname)
 		if (match) {
-			return element
+			return React.cloneElement(element, {...element.props, match})
 		}
 	}
 	return null
 }
 
 function compilePath(path) {
-	let regexpSource = '^' + path
+	// 路径参数的参数名数组 /post/:id paramNames=["id"]
+	let paramNames = []
+	let regexpSource = '^' + path.replace(/:(\w+)/g, (_, key) => {
+		paramNames.push(key)
+		return "([^\\/]+?)"
+	})
 	regexpSource += '$'
 	let matcher = new RegExp(regexpSource)
-	return matcher
+	return [matcher, paramNames]
 }
 /**
  * @param {*} path 路由的路径
  * @param {*} pathname 当前地址栏中的路径
  */
 export function matchPath(path, pathname) {
-	let matcher = compilePath(path)
+	let [matcher, paramNames] = compilePath(path)
 	let match = pathname.match(matcher)
 	if (!match) return null
-	return match
+	// 匹配到的路径字符串 path=/user/:id pathname=/user/100
+	const matchedPathname = match[0]
+	const values = match.slice(1)
+	// const [matchedPathname, ...values] = match
+	let params = paramNames.reduce((memo, paramName, index) => {
+		memo[paramName] = values[index]
+		return memo
+	},{})
+	return {params, pathname: matchedPathname, path}
 }
 
 export function useLocation() {
