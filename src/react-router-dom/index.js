@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from "react"
-import { Router, useNavigate } from '../react-router'
+import { Router, useNavigate } from '../react-router/index'
 import {createHashHistory, createBrowserHistory} from "../history" 
-export * from '../react-router'
+export * from '../react-router/index'
 
 export function HashRouter({children}) {
 	let historyRef = React.useRef()
@@ -35,6 +35,7 @@ export function BrowserRouter({children}) {
 	if (!historyRef.current) {
 		historyRef.current = createBrowserHistory()
 	}
+	
 	let history = historyRef.current
 	let [state, setState] = React.useState({
 		// 跳转到当前路径的动作类型：pushState => PUSH, go back forward => POP
@@ -42,7 +43,7 @@ export function BrowserRouter({children}) {
 		// 当前的路径 window.location.pathname
 		location: history.location
 	})
-	React.useLayoutEffect(()=> history.listen(setState), [history])
+	React.useLayoutEffect(()=> history.listen((state) => setState(state)), [history])
 	return (
 		<Router
 	  	children={children}
@@ -55,8 +56,6 @@ export function BrowserRouter({children}) {
 
 export function Link(props) {
 	let navigate = useNavigate()
-	const {to, children} = props
-	return (
-		<a onClick={() => navigate(to)}>{children}</a>
-	)
+	let { to, children, ...rest} = props
+	return ( <a href={to} {...rest} onClick={() => navigate(to)}>{children}</a>)
 }
