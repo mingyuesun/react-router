@@ -1,9 +1,16 @@
 import React from "react"
+import { useNavigate } from "../react-router-dom"
 
 function Home(props){
-	console.log(props)
+	let navigate = useNavigate()
+	function navigateTo() {
+		navigate('/profile')
+	}
 	return (
-		<div>Home</div>
+		<div>
+			<p>Home</p>
+			<button onClick={navigateTo}>跳转到/profile</button>
+		</div>
 	)
 }
 

@@ -246,3 +246,11 @@ export function useParams() {
   let routeMatch = matches[matches.length - 1]
   return routeMatch ? routeMatch.params : {}
 }
+
+export function Navigate({ to }) {
+  let navigate = useNavigate()
+  React.useLayoutEffect(() => {
+    navigate(to)
+  })
+  return null
+}

@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { BrowserRouter, Routes, Route, NavLink } from "./react-router-dom"
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from "./react-router-dom"
 import Home from "./components/Home"
 import User from "./components/User"
 import Profile from "./components/Profile"
@@ -40,6 +40,7 @@ ReactDOM.render(
       </Route>
       <Route path="/profile" element={<Profile />} />
       <Route path="/post/:id" element={<Post />} />
+			<Route path="*" element={<Navigate to="/" />}/>
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")
