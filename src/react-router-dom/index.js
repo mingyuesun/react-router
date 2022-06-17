@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from "react"
-import { Router, useNavigate } from '../react-router/index'
+import { Router, useNavigate, useLocation } from '../react-router/index'
 import {createHashHistory, createBrowserHistory} from "../history" 
 export * from '../react-router/index'
 
@@ -58,4 +58,30 @@ export function Link(props) {
 	let navigate = useNavigate()
 	let { to, children, ...rest} = props
 	return ( <a {...rest} onClick={() => navigate(to)}>{children}</a>)
+}
+
+/**
+ * @param {*} className
+ * @param {*} style
+ * @param {*} end
+ * @param {*} to
+ * @param {*} children
+ */
+export function NavLink({className: classNameProp = '', end = false, style: styleProp = {}, to, children, ...rest}) {
+	let location = useLocation()
+	let path = { pathname: to }
+	// 当前的路径
+	let locationPathname = location.pathname
+	// 当前导航想要跳转的路径
+	let toPathname = path.pathname
+	let isActive = locationPathname === toPathname || (!end && locationPathname.startsWith(toPathname) && locationPathname.charAt(toPathname.length) === "/")
+	let className
+	if (typeof classNameProp === 'function') {
+		className = classNameProp({isActive})
+	}
+	let style
+	if (typeof styleProp === 'function') {
+		style = styleProp({isActive})
+	}
+	return <Link to={to} className={className} style={style} {...rest}>{children}</Link>
 }
