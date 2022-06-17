@@ -53,7 +53,7 @@ function createBrowserHistory() {
     }
     globalHistory.pushState(state, null, pathname)
     let location = { state, pathname }
-    notify(action, location)
+    notify({action, location})
   }
   const history = {
     action: "POP",

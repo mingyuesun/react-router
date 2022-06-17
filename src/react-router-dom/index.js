@@ -57,5 +57,5 @@ export function BrowserRouter({children}) {
 export function Link(props) {
 	let navigate = useNavigate()
 	let { to, children, ...rest} = props
-	return ( <a href={to} {...rest} onClick={() => navigate(to)}>{children}</a>)
+	return ( <a {...rest} onClick={() => navigate(to)}>{children}</a>)
 }
