@@ -8,6 +8,8 @@ import Post from "./components/Post"
 import UserAdd from "./components/UserAdd"
 import UserList from "./components/UserList"
 import UserDetail from "./components/UserDetail"
+import Protected from "./components/Protected"
+import Login from "./components/Login"
 
 const activeStyle = {
 	backgroundColor: 'green'
@@ -30,6 +32,9 @@ ReactDOM.render(
       <li>
         <NavLink to="/profile" {...activeNavProps}>个人中心</NavLink>
       </li>
+      <li>
+        <NavLink to="/xxx" {...activeNavProps}>重定向</NavLink>
+      </li>
     </ul>
     <Routes>
       <Route path="/" element={<Home />} />
@@ -38,7 +43,8 @@ ReactDOM.render(
         <Route path="list" element={<UserList />} />
         <Route path="detail/:id" element={<UserDetail />} />
       </Route>
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile" element={<Protected component={Profile} path="/profile" />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/post/:id" element={<Post />} />
 			<Route path="*" element={<Navigate to="/" />}/>
     </Routes>

@@ -207,7 +207,7 @@ function compilePath(path, end) {
     })
   if(path.endsWith("*")) {
     paramNames.push("*")
-    regexpSource += "(?:\\/(.+)|\\/*)$"
+    regexpSource += path === "*" || path === "/*" ? "(.*)$" : "(?:\\/(.+)|\\/*)$"
   } else {
     regexpSource += end ? "\\/*$" : "(?:\b|\\/|$)"
   }
