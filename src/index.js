@@ -1,15 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { BrowserRouter, Routes, Route, NavLink, Navigate } from "./react-router-dom"
-import Home from "./components/Home"
-import User from "./components/User"
-import Profile from "./components/Profile"
-import Post from "./components/Post"
-import UserAdd from "./components/UserAdd"
-import UserList from "./components/UserList"
-import UserDetail from "./components/UserDetail"
-import Protected from "./components/Protected"
-import Login from "./components/Login"
+import { BrowserRouter, NavLink, useRoutes } from "./react-router-dom"
+import RoutesConfig from './routesConfig'
 
 const activeStyle = {
 	backgroundColor: 'green'
@@ -20,6 +12,29 @@ const activeNavProps = {
 	className: ({isActive}) => isActive ? activeClassName : ""
 }
 
+const LazyFoo = React.lazy(() => import("./components/Foo"))
+function App() {
+  let [routes, setRoutes] = React.useState(RoutesConfig)
+  const addRoute = () => {
+    setRoutes([
+      {
+        path: "/foo",
+        element: (
+          <React.Suspense fallback={<div>loading...</div>}>
+            <LazyFoo/>
+          </React.Suspense>
+        )
+      },
+      ...routes
+    ])
+  }
+  return (
+    <div>
+      {useRoutes(routes)}
+      <button onClick={addRoute}>addRoute</button>
+    </div>
+  )
+}
 ReactDOM.render(
   <BrowserRouter>
     <ul>
@@ -33,21 +48,10 @@ ReactDOM.render(
         <NavLink to="/profile" {...activeNavProps}>个人中心</NavLink>
       </li>
       <li>
-        <NavLink to="/xxx" {...activeNavProps}>重定向</NavLink>
+        <NavLink to="/foo" {...activeNavProps}>Foo</NavLink>
       </li>
     </ul>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/user/*" element={<User />}>
-        <Route path="add" element={<UserAdd />} />
-        <Route path="list" element={<UserList />} />
-        <Route path="detail/:id" element={<UserDetail />} />
-      </Route>
-      <Route path="/profile" element={<Protected component={Profile} path="/profile" />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/post/:id" element={<Post />} />
-			<Route path="*" element={<Navigate to="/" />}/>
-    </Routes>
+    <App/>
   </BrowserRouter>,
   document.getElementById("root")
 )
