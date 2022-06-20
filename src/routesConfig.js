@@ -10,7 +10,7 @@ import Login from "./components/Login"
 import NotFound from "./components/NotFound"
 
 const routes = [
-	{path: "/", element: <Home />},
+	{path: "/", index: true, element: <Home />},
 	{path: "/user", element: <User />, children: [
 		{path: "add", element: <UserAdd />},
 		{path: "list", element: <UserList />},

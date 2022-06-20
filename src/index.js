@@ -17,6 +17,7 @@ function App() {
   let [routes, setRoutes] = React.useState(RoutesConfig)
   const addRoute = () => {
     setRoutes([
+      ...routes,
       {
         path: "/foo",
         element: (
@@ -24,8 +25,7 @@ function App() {
             <LazyFoo/>
           </React.Suspense>
         )
-      },
-      ...routes
+      }
     ])
   }
   return (

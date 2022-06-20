@@ -78,6 +78,8 @@ function matchRoutes(routes, location) {
   let pathname = location.pathname
   // 打平所有的分支路径
   let branches = flattenRoutes(routes)
+  console.log(branches)
+  rankRouteBranches(branches)
 	// 匹配的结果
   let matches = null
 	// 按分支顺序依次进行匹配，如果匹配上了直接退出循环，不再进行后续的匹配
@@ -85,6 +87,27 @@ function matchRoutes(routes, location) {
 		matches = matchRouteBranch(branches[i], pathname)
 	}
 	return matches
+}
+function rankRouteBranches(branches){
+  branches.sort((a, b) => {
+    // 如果分数不一样，按分数倒序排列
+    // 如果分数一样，只能比较 childrenIndex
+    return a.score !== b.score ? b.score - a.score : compareIndexes(
+      a.routesMeta.map(meta => meta.childrenIndex),
+      b.routesMeta.map(meta => meta.childrenIndex)
+    )
+  })
+}
+/**
+ *  /user/add   routesMeta = [userMeta, addMeta]=>[2, 0]
+ *  /user/list  routesMeta = [userMeta, listMeta]=>[2, 1]
+ */
+function compareIndexes(a, b){
+  // 如果级别数量相等，并且父路由一样，说明 a, b 是兄弟路由
+  let sibling = a.length === b.length && a.slice(0, -1).every((n, i) => n === b[i])
+  // 如果是兄弟的话，就比较 index，index 越小，级别越高
+  // 如果不是兄弟就认为相等
+  return sibling ? a[a.length - 1] - b[b.length - 1] : 0 
 }
 /**
  * 用分支的路径匹配地址栏的路径名
@@ -158,6 +181,30 @@ function matchRouteBranch(branch, pathname) {
     pathnameBase  //  /user
   }
 }
+
+const isSplat = s => s === "*"
+const splatPenalty = -2
+const indexRouteValue = 2
+const paramReg = /^:\w+$/
+const dynamicSegmentValue = 3
+const emptySegmentValue = 1
+const staticSegmentValue = 10
+function computeScore(path,  index) {
+  let segments = path.split('/')  // /user/add => ['user', 'add']
+  // 分片的长度就是基础分数
+  let initialScore = segments.length
+  if (segments.some(isSplat)) {  // /user/* => 有 * 认为是通配，降低分数
+    initialScore += splatPenalty
+  }
+  if (index) {
+    initialScore += indexRouteValue
+  }
+  // 1. 过滤
+  return segments.filter(s => !isSplat(s)).reduce((score, segment) => {
+    return score + (paramReg.test(segment) ? dynamicSegmentValue: (segment === '' ? emptySegmentValue : staticSegmentValue))
+  }, initialScore)
+}
+
 /**
  * 打平所有分支
  * @param {*} routes 路由配置
@@ -168,11 +215,12 @@ function flattenRoutes(
   parentsMeta = [],
   parentPath = ""
 ) {
-  routes.forEach((route) => {
+  routes.forEach((route, index) => {
     // 定义一个路由元数据
     let meta = {
       relativePath: route.path || "",  // 路径相对父路径的路径 UserAdd relativePath = add
-			route  // 路由对象
+			route,  // 路由对象
+      childrenIndex: index
     }
 		// 现在 routes 其实只有一个元素，/user/* parentPath="" relativePath=/user/*
 		// path=/user/*
@@ -185,7 +233,8 @@ function flattenRoutes(
 		}
 		branches.push({
 			path,
-			routesMeta
+			routesMeta,
+      score: computeScore(path, route.index)
 		})
   })
 	return branches
